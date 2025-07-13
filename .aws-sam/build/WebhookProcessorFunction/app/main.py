@@ -43,21 +43,21 @@ async def lifespan(app: FastAPI):
     # Startup
     logger.info("Starting Enterprise Suite API")
     
-    # Create database tables
-    Base.metadata.create_all(bind=engine)
+    # # Create database tables
+    # Base.metadata.create_all(bind=engine)
     
-    # Test Redis connection
-    try:
-        await redis_client.ping()
-        logger.info("Redis connection established")
-    except Exception as e:
-        logger.error(f"Redis connection failed: {e}")
+    # # Test Redis connection
+    # try:
+    #     await redis_client.ping()
+    #     logger.info("Redis connection established")
+    # except Exception as e:
+    #     logger.error(f"Redis connection failed: {e}")
     
     yield
     
     # Shutdown
     logger.info("Shutting down Enterprise Suite API")
-    await redis_client.close()
+    # await redis_client.close()
 
 
 # Create FastAPI app

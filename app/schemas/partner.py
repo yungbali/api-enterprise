@@ -1,7 +1,7 @@
 """
 Partner schema definitions
 """
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 from pydantic import BaseModel, Field
 from datetime import datetime
 
@@ -54,3 +54,22 @@ class DeliveryPartner(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class DeliverySummary(BaseModel):
+    id: int
+    status: str
+
+    class Config:
+        orm_mode = True
+
+class PartnerOut(BaseModel):
+    id: str
+    name: str
+    description: Optional[str] = None
+    partner_type: str
+    active: bool
+    deliveries: List[DeliverySummary] = []
+
+    class Config:
+        orm_mode = True

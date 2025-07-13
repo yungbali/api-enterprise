@@ -77,7 +77,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: EnterpriseAPIFunction
-      Handler: test_handler.handler
+      Handler: app/lambda_handler.handler
       Events:
         ApiEvent:
           Type: Api
@@ -94,6 +94,7 @@ Resources:
             Ref: JWTSecretKey
           WEBHOOK_SECRET:
             Ref: WebhookSecret
+          DATABASE_URL: sqlite:///./test.db
       Policies:
       - S3ReadPolicy:
           BucketName:

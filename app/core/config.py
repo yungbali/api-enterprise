@@ -6,6 +6,8 @@ from pydantic_settings import BaseSettings
 from pydantic import field_validator
 import os
 from functools import lru_cache
+from dotenv import load_dotenv
+load_dotenv()
 
 
 class Settings(BaseSettings):
@@ -83,3 +85,5 @@ def get_settings() -> Settings:
 
 # Global settings instance
 settings = get_settings()
+
+print("DATABASE_URL:", os.environ.get("DATABASE_URL"))

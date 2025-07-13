@@ -1,7 +1,11 @@
 """
 Partner Endpoints
 """
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from app.core.database import get_db
+from app.models.partner import DeliveryPartner
+from app.schemas.partner import PartnerOut, DeliverySummary
 
 router = APIRouter()
 
@@ -12,10 +16,21 @@ async def create_partner():
     return {"message": "Create partner endpoint - implementation pending"}
 
 
-@router.get("/{partner_id}")
-async def get_partner(partner_id: str):
-    """Get partner by ID."""
-    return {"message": f"Get partner {partner_id} - implementation pending"}
+@router.get("/{partner_id}", response_model=PartnerOut)
+async def get_partner(partner_id: str, db: Session = Depends(get_db)):
+    partner = db.query(DeliveryPartner).filter(DeliveryPartner.id == partner_id).first()
+    if not partner:
+        raise HTTPException(status_code=404, detail="Partner not found")
+    return PartnerOut(
+        id=partner.id,
+        name=partner.name,
+        description=partner.description,
+        partner_type=partner.partner_type,
+        active=partner.active,
+        deliveries=[
+            DeliverySummary(id=d.id, status=d.status) for d in getattr(partner, "deliveries", [])
+        ]
+    )
 
 
 @router.put("/{partner_id}")

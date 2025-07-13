@@ -39,7 +39,7 @@ class WorkflowStepCreate(WorkflowStepBase):
     pass
 
 
-class WorkflowStep(WorkflowStepBase):
+class WorkflowStep(BaseModel):
     """Schema for workflow step with execution info"""
     id: str
     workflow_id: str
@@ -51,8 +51,6 @@ class WorkflowStep(WorkflowStepBase):
     
     class Config:
         from_attributes = True
-        # Exclude relationships that could cause circular references
-        exclude = {"workflow"}
 
 
 class WorkflowBase(BaseModel):
@@ -77,21 +75,18 @@ class WorkflowUpdate(BaseModel):
     status: Optional[WorkflowStatus] = None
 
 
-class Workflow(WorkflowBase):
+class Workflow(BaseModel):
     """Schema for workflow with execution info"""
     id: str
     status: WorkflowStatus = WorkflowStatus.PENDING
     created_at: datetime
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
-    steps: List[WorkflowStep] = []
     result: Optional[Dict[str, Any]] = {}
     error_message: Optional[str] = None
     
     class Config:
         from_attributes = True
-        # Exclude relationships that could cause circular references
-        exclude = {"executions"}
 
 
 class WorkflowExecution(BaseModel):

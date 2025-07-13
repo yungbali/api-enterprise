@@ -1,7 +1,7 @@
 """
 Partner schema definitions
 """
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 from pydantic import BaseModel, Field
 from datetime import datetime
 
@@ -41,13 +41,35 @@ class PartnerUpdate(BaseModel):
     config: Optional[PartnerConfig] = None
 
 
-class DeliveryPartner(PartnerBase):
+class DeliveryPartner(BaseModel):
     """Schema for partner with delivery info"""
     id: str
+    name: str
+    description: Optional[str] = None
+    partner_type: str
+    active: bool = True
     created_at: datetime
     updated_at: Optional[datetime] = None
-    
+    # Remove any nested model fields (configs, delivery_statuses, config)
+
     class Config:
         from_attributes = True
-        # Exclude relationships that could cause circular references
-        exclude = {"configs", "delivery_statuses"}
+
+
+class DeliverySummary(BaseModel):
+    id: int
+    status: str
+
+    class Config:
+        orm_mode = True
+
+class PartnerOut(BaseModel):
+    id: str
+    name: str
+    description: Optional[str] = None
+    partner_type: str
+    active: bool
+    deliveries: List[DeliverySummary] = []
+
+    class Config:
+        orm_mode = True
