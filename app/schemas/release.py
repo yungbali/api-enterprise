@@ -151,11 +151,10 @@ class Release(BaseModel):
     created_at: datetime
     updated_at: datetime
     
-    # Related data
-    tracks: List[Track] = Field(default_factory=list)
-    assets: List[ReleaseAsset] = Field(default_factory=list)
+    # Related data (primitive only)
+    tracks: Optional[list] = Field(default_factory=list)
+    assets: Optional[list] = Field(default_factory=list)
 
     class Config:
         from_attributes = True
-        # Exclude relationships that could cause circular references
         exclude = {"delivery_statuses"}
