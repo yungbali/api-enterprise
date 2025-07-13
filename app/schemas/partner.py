@@ -49,3 +49,5 @@ class DeliveryPartner(PartnerBase):
     
     class Config:
         from_attributes = True
+        # Exclude relationships that could cause circular references
+        exclude = {"configs", "delivery_statuses"}

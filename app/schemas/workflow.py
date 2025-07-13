@@ -51,6 +51,8 @@ class WorkflowStep(WorkflowStepBase):
     
     class Config:
         from_attributes = True
+        # Exclude relationships that could cause circular references
+        exclude = {"workflow"}
 
 
 class WorkflowBase(BaseModel):
@@ -88,6 +90,8 @@ class Workflow(WorkflowBase):
     
     class Config:
         from_attributes = True
+        # Exclude relationships that could cause circular references
+        exclude = {"executions"}
 
 
 class WorkflowExecution(BaseModel):
