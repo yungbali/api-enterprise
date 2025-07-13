@@ -118,43 +118,40 @@ class ReleaseUpdate(BaseModel):
 
 
 class Release(BaseModel):
-    """Schema for release response."""
     id: int
     release_id: str
     title: str
     artist: str
-    label: Optional[str] = None
-    release_type: ReleaseType
-    release_date: Optional[datetime] = None
-    original_release_date: Optional[datetime] = None
-    
-    # DDEX Fields
-    grid: Optional[str] = None
-    upc: Optional[str] = None
-    catalog_number: Optional[str] = None
-    genre: Optional[str] = None
-    subgenre: Optional[str] = None
-    
-    # Metadata
-    description: Optional[str] = None
-    copyright_text: Optional[str] = None
-    producer_copyright_text: Optional[str] = None
-    language: Optional[str] = None
-    territory: Optional[str] = None
-    
-    # Status and tracking
-    status: ReleaseStatus
-    validation_status: str
-    validation_errors: Optional[Dict[str, Any]] = None
-    
-    # Timestamps
     created_at: datetime
     updated_at: datetime
-    
-    # Related data (primitive only)
-    tracks: Optional[list] = Field(default_factory=list)
-    assets: Optional[list] = Field(default_factory=list)
+
+
+class TrackSummary(BaseModel):
+    id: int
+    title: str
+    artist: str
+    track_number: int
 
     class Config:
-        from_attributes = True
-        exclude = {"delivery_statuses"}
+        orm_mode = True
+
+class ReleaseAssetSummary(BaseModel):
+    id: int
+    asset_type: str
+    file_name: str
+
+    class Config:
+        orm_mode = True
+
+class ReleaseOut(BaseModel):
+    id: int
+    release_id: str
+    title: str
+    artist: str
+    created_at: datetime
+    updated_at: datetime
+    tracks: List[TrackSummary] = []
+    assets: List[ReleaseAssetSummary] = []
+
+    class Config:
+        orm_mode = True

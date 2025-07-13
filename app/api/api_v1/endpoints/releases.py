@@ -8,12 +8,12 @@ from app import crud, schemas
 from app.core.database import get_db
 from app.core.security import get_current_active_user
 from app.models.release import ReleaseStatus, Release
-from app.schemas.release import ReleaseCreate, ReleaseUpdate
+from app.schemas.release import ReleaseCreate, ReleaseUpdate, ReleaseOut
 
 router = APIRouter()
 
 
-@router.post("/", response_model=schemas.Release, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=ReleaseOut, status_code=status.HTTP_201_CREATED)
 async def create_release(
     release_in: ReleaseCreate,
     db: Session = Depends(get_db),
@@ -24,7 +24,7 @@ async def create_release(
     return release
 
 
-@router.get("/{release_id}", response_model=schemas.Release)
+@router.get("/{release_id}", response_model=ReleaseOut)
 async def get_release(
     release_id: str,
     db: Session = Depends(get_db),
@@ -40,7 +40,7 @@ async def get_release(
     return release
 
 
-@router.put("/{release_id}", response_model=schemas.Release)
+@router.put("/{release_id}", response_model=ReleaseOut)
 async def update_release(
     release_id: str,
     release_in: ReleaseUpdate,
@@ -58,7 +58,7 @@ async def update_release(
     return release
 
 
-@router.delete("/{release_id}", response_model=schemas.Release)
+@router.delete("/{release_id}", response_model=ReleaseOut)
 async def delete_release(
     release_id: str,
     db: Session = Depends(get_db),

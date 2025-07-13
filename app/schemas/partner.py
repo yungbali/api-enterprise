@@ -41,13 +41,16 @@ class PartnerUpdate(BaseModel):
     config: Optional[PartnerConfig] = None
 
 
-class DeliveryPartner(PartnerBase):
+class DeliveryPartner(BaseModel):
     """Schema for partner with delivery info"""
     id: str
+    name: str
+    description: Optional[str] = None
+    partner_type: str
+    active: bool = True
     created_at: datetime
     updated_at: Optional[datetime] = None
-    
+    # Remove any nested model fields (configs, delivery_statuses, config)
+
     class Config:
         from_attributes = True
-        # Exclude relationships that could cause circular references
-        exclude = {"configs", "delivery_statuses"}

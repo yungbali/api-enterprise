@@ -40,7 +40,7 @@ class DeliveryUpdate(BaseModel):
     error_message: Optional[str] = None
 
 
-class Delivery(DeliveryBase):
+class Delivery(BaseModel):
     """Schema for delivery with tracking info"""
     id: str
     status: DeliveryStatusEnum = DeliveryStatusEnum.PENDING
@@ -52,11 +52,10 @@ class Delivery(DeliveryBase):
     max_retries: int = 3
     error_message: Optional[str] = None
     external_id: Optional[str] = None
-    
+    # Remove any nested model fields (release, partner, attempts)
+
     class Config:
         from_attributes = True
-        # Exclude relationships that could cause circular references
-        exclude = {"release", "partner", "attempts"}
 
 
 class DeliveryBatch(BaseModel):
