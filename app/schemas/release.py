@@ -157,3 +157,5 @@ class Release(BaseModel):
 
     class Config:
         from_attributes = True
+        # Exclude relationships that could cause circular references
+        exclude = {"delivery_statuses"}

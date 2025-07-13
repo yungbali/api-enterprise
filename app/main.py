@@ -44,7 +44,7 @@ async def lifespan(app: FastAPI):
     logger.info("Starting Enterprise Suite API")
     
     # Create database tables
-    # Base.metadata.create_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
     
     # Test Redis connection
     try:
@@ -133,12 +133,20 @@ async def health_check():
     except Exception:
         redis_status = "unhealthy"
     
+    try:
+        # Check Database
+        with engine.connect() as connection:
+            connection.execute("SELECT 1")
+        database_status = "healthy"
+    except Exception:
+        database_status = "unhealthy"
+    
     return {
         "status": "healthy",
         "version": settings.APP_VERSION,
         "services": {
             "redis": redis_status,
-            "database": "healthy",  # Add DB health check
+            "database": database_status,
         },
     }
 

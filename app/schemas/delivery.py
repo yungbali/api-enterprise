@@ -7,7 +7,7 @@ from datetime import datetime
 from enum import Enum
 
 
-class DeliveryStatus(str, Enum):
+class DeliveryStatusEnum(str, Enum):
     """Delivery status enumeration"""
     PENDING = "pending"
     PROCESSING = "processing"
@@ -33,7 +33,7 @@ class DeliveryCreate(DeliveryBase):
 
 class DeliveryUpdate(BaseModel):
     """Schema for updating delivery"""
-    status: Optional[DeliveryStatus] = None
+    status: Optional[DeliveryStatusEnum] = None
     priority: Optional[int] = None
     scheduled_at: Optional[datetime] = None
     metadata: Optional[Dict[str, Any]] = None
@@ -43,7 +43,7 @@ class DeliveryUpdate(BaseModel):
 class Delivery(DeliveryBase):
     """Schema for delivery with tracking info"""
     id: str
-    status: DeliveryStatus = DeliveryStatus.PENDING
+    status: DeliveryStatusEnum = DeliveryStatusEnum.PENDING
     created_at: datetime
     scheduled_at: Optional[datetime] = None
     started_at: Optional[datetime] = None
@@ -55,6 +55,8 @@ class Delivery(DeliveryBase):
     
     class Config:
         from_attributes = True
+        # Exclude relationships that could cause circular references
+        exclude = {"release", "partner", "attempts"}
 
 
 class DeliveryBatch(BaseModel):

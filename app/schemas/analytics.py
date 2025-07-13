@@ -2,7 +2,7 @@
 Analytics schema definitions
 """
 from typing import Optional, Dict, Any, List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from datetime import datetime, date
 
 
@@ -32,19 +32,20 @@ class AnalyticsUpdate(BaseModel):
 
 class AnalyticsRecord(AnalyticsBase):
     """Schema for analytics record with ID"""
+    model_config = ConfigDict(from_attributes=True)
+    
     id: str
     release_id: Optional[str] = None
     partner_id: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
     created_at: datetime
     updated_at: Optional[datetime] = None
-    
-    class Config:
-        from_attributes = True
 
 
 class AnalyticsSummary(BaseModel):
     """Schema for analytics summary"""
+    model_config = ConfigDict(from_attributes=True)
+    
     total_plays: int = 0
     total_downloads: int = 0
     total_streams: int = 0
@@ -52,5 +53,3 @@ class AnalyticsSummary(BaseModel):
     date_range: Optional[Dict[str, Any]] = None
     top_releases: List[Dict[str, Any]] = Field(default_factory=list)
     top_partners: List[Dict[str, Any]] = Field(default_factory=list)
-    class Config:
-        from_attributes = True
