@@ -77,7 +77,6 @@ class PartnerOut(BaseModel):
     description: Optional[str] = None
     partner_type: str
     active: bool
-    # deliveries: List[DeliverySummary] = []  # Temporarily commented out to test for RecursionError
-
+    # deliveries: List[DeliverySummary] = []  # Temporarily commented out to test for RecursionError    
     class Config:
         from_attributes = True

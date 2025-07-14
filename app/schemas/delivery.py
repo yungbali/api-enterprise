@@ -53,7 +53,7 @@ class Delivery(BaseModel):
     error_message: Optional[str] = None
     external_id: Optional[str] = None
     # Remove any nested model fields (release, partner, attempts)
-
+    
     class Config:
         from_attributes = True
 

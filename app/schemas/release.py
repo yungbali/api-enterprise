@@ -84,7 +84,7 @@ class ReleaseCreate(BaseModel):
     producer_copyright_text: Optional[str] = None
     language: Optional[str] = Field(None, max_length=10)
     territory: Optional[str] = Field(None, max_length=10)
-
+    
 
 class ReleaseUpdate(BaseModel):
     """Schema for updating a release."""
@@ -120,7 +120,7 @@ class Release(BaseModel):
     artist: str
     created_at: datetime
     updated_at: datetime
-
+    
 
 class TrackSummary(BaseModel):
     id: int

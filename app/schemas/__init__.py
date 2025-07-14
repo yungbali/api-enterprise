@@ -1,32 +1,16 @@
 """
 Pydantic Schemas
 """
-from app.schemas.release import Release, ReleaseCreate, ReleaseUpdate
-from app.schemas.user import User, UserCreate, UserUpdate
-from app.schemas.partner import DeliveryPartner, PartnerCreate, PartnerUpdate, PartnerConfig
-from app.schemas.delivery import DeliveryStatusEnum, Delivery, DeliveryCreate, DeliveryUpdate
-from app.schemas.analytics import AnalyticsRecord, AnalyticsCreate, AnalyticsSummary
-from app.schemas.workflow import Workflow, WorkflowCreate, WorkflowExecution
+from .release import *
+from .partner import *
+# from .delivery import *
+# from .workflow import *
+# from .analytics import *
+# from .musicbrainz import *
+from .user import *
 
 __all__ = [
-    "Release",
-    "ReleaseCreate", 
-    "ReleaseUpdate",
     "User",
     "UserCreate",
     "UserUpdate",
-    "DeliveryPartner",
-    "PartnerCreate",
-    "PartnerUpdate",
-    "PartnerConfig",
-    "DeliveryStatusEnum",
-    "Delivery",
-    "DeliveryCreate",
-    "DeliveryUpdate",
-    "AnalyticsRecord",
-    "AnalyticsCreate",
-    "AnalyticsSummary",
-    "Workflow",
-    "WorkflowCreate",
-    "WorkflowExecution",
 ]
