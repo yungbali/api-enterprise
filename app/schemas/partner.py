@@ -61,15 +61,23 @@ class DeliverySummary(BaseModel):
     status: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
+# ---
+# If you need to add recursive/self-referencing fields to this schema (e.g., partners: List['PartnerOut']),
+# use a string type hint and call PartnerOut.model_rebuild() after the class definition.
+# Example:
+#   partners: List['PartnerOut'] = []
+#   ...
+# PartnerOut.model_rebuild()
+# ---
 class PartnerOut(BaseModel):
     id: str
     name: str
     description: Optional[str] = None
     partner_type: str
     active: bool
-    deliveries: List[DeliverySummary] = []
+    # deliveries: List[DeliverySummary] = []  # Temporarily commented out to test for RecursionError
 
     class Config:
-        orm_mode = True
+        from_attributes = True

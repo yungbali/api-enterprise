@@ -84,10 +84,6 @@ class ReleaseCreate(BaseModel):
     producer_copyright_text: Optional[str] = None
     language: Optional[str] = Field(None, max_length=10)
     territory: Optional[str] = Field(None, max_length=10)
-    
-    # Related data
-    tracks: List[TrackCreate] = Field(default_factory=list)
-    assets: List[ReleaseAssetCreate] = Field(default_factory=list)
 
 
 class ReleaseUpdate(BaseModel):
@@ -133,7 +129,7 @@ class TrackSummary(BaseModel):
     track_number: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class ReleaseAssetSummary(BaseModel):
     id: int
@@ -141,8 +137,16 @@ class ReleaseAssetSummary(BaseModel):
     file_name: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
+# ---
+# If you need to add recursive/self-referencing fields to this schema (e.g., sub_releases: List['ReleaseOut']),
+# use a string type hint and call ReleaseOut.model_rebuild() after the class definition.
+# Example:
+#   sub_releases: List['ReleaseOut'] = []
+#   ...
+# ReleaseOut.model_rebuild()
+# ---
 class ReleaseOut(BaseModel):
     id: int
     release_id: str
@@ -150,8 +154,8 @@ class ReleaseOut(BaseModel):
     artist: str
     created_at: datetime
     updated_at: datetime
-    tracks: List[TrackSummary] = []
-    assets: List[ReleaseAssetSummary] = []
+    # tracks: List[TrackSummary] = []  # Temporarily commented out to test for RecursionError
+    # assets: List[ReleaseAssetSummary] = []  # Temporarily commented out to test for RecursionError
 
     class Config:
-        orm_mode = True
+        from_attributes = True
