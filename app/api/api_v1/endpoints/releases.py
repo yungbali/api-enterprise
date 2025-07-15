@@ -3,6 +3,7 @@ Release Endpoints
 """
 from fastapi import APIRouter, HTTPException, Depends, status
 from sqlalchemy.orm import Session
+from typing import List
 
 from app import crud, schemas
 from app.core.database import get_db
@@ -161,3 +162,8 @@ async def delete_release(
             ) for asset in release.assets
         ]
     )
+
+
+@router.get("/", response_model=List[ReleaseOut])
+def list_releases(db: Session = Depends(get_db)):
+    return db.query(Release).all()
