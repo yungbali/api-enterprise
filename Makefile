@@ -80,6 +80,66 @@ test-coverage:
 	@echo "Running tests with coverage..."
 	docker-compose exec api pytest tests/ --cov=app --cov-report=html --cov-report=term
 
+test-unit:
+	@echo "Running unit tests..."
+	docker-compose exec api pytest tests/ -v -m unit
+
+test-integration:
+	@echo "Running integration tests..."
+	docker-compose exec api pytest tests/ -v -m integration
+
+test-e2e:
+	@echo "Running end-to-end tests..."
+	docker-compose exec api pytest tests/ -v -m e2e
+
+test-performance:
+	@echo "Running performance tests..."
+	docker-compose exec api pytest tests/ -v -m performance
+
+test-security:
+	@echo "Running security tests..."
+	docker-compose exec api pytest tests/ -v -m security
+
+test-infrastructure:
+	@echo "Testing infrastructure setup..."
+	docker-compose exec api pytest tests/test_infrastructure.py -v
+
+# Test Environment Management
+test-env-up:
+	@echo "Starting test environment..."
+	docker-compose -f docker-compose.test.yml up -d
+	@echo "Test services are starting up..."
+	@echo "Test API will be available at: http://localhost:8001"
+	@echo "Test database at: localhost:5433"
+	@echo "Test Redis at: localhost:6380"
+
+test-env-down:
+	@echo "Stopping test environment..."
+	docker-compose -f docker-compose.test.yml down
+
+test-env-logs:
+	@echo "Showing test environment logs..."
+	docker-compose -f docker-compose.test.yml logs -f
+
+test-env-shell:
+	@echo "Accessing test runner shell..."
+	docker-compose -f docker-compose.test.yml exec test-runner bash
+
+test-standalone:
+	@echo "Running tests in standalone test environment..."
+	docker-compose -f docker-compose.test.yml up -d
+	@echo "Waiting for services to be ready..."
+	@sleep 10
+	docker-compose -f docker-compose.test.yml exec test-runner pytest tests/ -v
+	docker-compose -f docker-compose.test.yml down
+
+test-local:
+	@echo "Running tests locally (requires local services)..."
+	@export ENVIRONMENT=testing && \
+	export DATABASE_URL=postgresql://enterprise_test_user:enterprise_test_pass@localhost:5433/enterprise_test_db && \
+	export REDIS_URL=redis://localhost:6380/0 && \
+	pytest tests/ -v
+
 # Database Management
 migrate:
 	@echo "Running database migrations..."

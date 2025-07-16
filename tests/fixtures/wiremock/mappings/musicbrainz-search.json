@@ -1,0 +1,21 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/recording",
+    "queryParameters": {
+      "query": {
+        "matches": ".*"
+      },
+      "fmt": {
+        "equalTo": "json"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "bodyFileName": "musicbrainz-recording-response.json"
+  }
+}

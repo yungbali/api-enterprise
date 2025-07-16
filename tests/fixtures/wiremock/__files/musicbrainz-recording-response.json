@@ -1,0 +1,74 @@
+{
+  "created": "2023-12-01T00:00:00.000Z",
+  "count": 1,
+  "offset": 0,
+  "recordings": [
+    {
+      "id": "test-recording-id-12345",
+      "score": 100,
+      "title": "Test Song Title",
+      "length": 180000,
+      "disambiguation": "",
+      "artist-credit": [
+        {
+          "name": "Test Artist",
+          "artist": {
+            "id": "test-artist-id-67890",
+            "name": "Test Artist",
+            "sort-name": "Artist, Test",
+            "disambiguation": ""
+          }
+        }
+      ],
+      "releases": [
+        {
+          "id": "test-release-id-11111",
+          "title": "Test Album",
+          "status-id": "4e304316-386d-3409-af2e-78857eec5cfe",
+          "status": "Official",
+          "date": "2023-01-01",
+          "country": "US",
+          "release-events": [
+            {
+              "date": "2023-01-01",
+              "area": {
+                "id": "489ce91b-6658-3307-9877-795b68554c98",
+                "name": "United States",
+                "sort-name": "United States",
+                "iso-3166-1-codes": ["US"]
+              }
+            }
+          ],
+          "track-count": 10,
+          "media": [
+            {
+              "position": 1,
+              "format": "CD",
+              "track": [
+                {
+                  "id": "test-track-id-22222",
+                  "number": "1",
+                  "title": "Test Song Title",
+                  "length": 180000
+                }
+              ],
+              "track-count": 10,
+              "track-offset": 0
+            }
+          ]
+        }
+      ],
+      "isrcs": ["USRC17607839"],
+      "tags": [
+        {
+          "count": 1,
+          "name": "electronic"
+        },
+        {
+          "count": 1,
+          "name": "test"
+        }
+      ]
+    }
+  ]
+}

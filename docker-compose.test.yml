@@ -1,84 +1,186 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database
-  postgres:
+  # PostgreSQL Test Database
+  postgres-test:
     image: postgres:13-alpine
     environment:
-      - POSTGRES_DB=enterprise_db
-      - POSTGRES_USER=enterprise_user
-      - POSTGRES_PASSWORD=enterprise_pass
+      - POSTGRES_DB=enterprise_test_db
+      - POSTGRES_USER=enterprise_test_user
+      - POSTGRES_PASSWORD=enterprise_test_pass
       - POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256
     ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - "5433:5432"  # Different port to avoid conflicts
+    tmpfs:
+      - /var/lib/postgresql/data  # Use tmpfs for faster test database
     networks:
-      - enterprise-network
+      - test-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U enterprise_user -d enterprise_db"]
-      interval: 10s
-      timeout: 5s
+      test: ["CMD-SHELL", "pg_isready -U enterprise_test_user -d enterprise_test_db"]
+      interval: 5s
+      timeout: 3s
       retries: 5
-      start_period: 10s
+      start_period: 5s
+    command: >
+      postgres
+      -c shared_preload_libraries=pg_stat_statements
+      -c pg_stat_statements.track=all
+      -c max_connections=200
+      -c shared_buffers=256MB
+      -c effective_cache_size=1GB
+      -c maintenance_work_mem=64MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=16MB
+      -c default_statistics_target=100
 
-  # Redis for Caching and Message Broker
-  redis:
+  # Redis Test Instance
+  redis-test:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
+      - "6380:6379"  # Different port to avoid conflicts
+    tmpfs:
+      - /data  # Use tmpfs for faster test Redis
     networks:
-      - enterprise-network
+      - test-network
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
+      interval: 5s
+      timeout: 3s
       retries: 5
-      start_period: 10s
+      start_period: 5s
+    command: >
+      redis-server
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+      --save ""
+      --appendonly no
 
-  # Main FastAPI Application
-  api:
+  # Test API Service
+  api-test:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "8001:8000"  # Different port to avoid conflicts
     environment:
-      - ENVIRONMENT=development
+      - ENVIRONMENT=testing
       - DEBUG=true
-      - DATABASE_URL=postgresql://enterprise_user:enterprise_pass@postgres:5432/enterprise_db
-      - REDIS_URL=redis://redis:6379/0
-      - SECRET_KEY=dev-secret-key-change-in-production-with-32-chars-minimum
-      - JWT_SECRET_KEY=dev-jwt-secret-key-change-in-production-with-32-chars-minimum
-      - CORS_ORIGINS=["http://localhost:3000", "http://localhost:8080"]
-      - ALLOWED_HOSTS=["localhost", "127.0.0.1"]
-      - CELERY_BROKER_URL=redis://redis:6379/1
-      - CELERY_RESULT_BACKEND=redis://redis:6379/2
-      - AWS_ACCESS_KEY_ID=test
-      - AWS_SECRET_ACCESS_KEY=test
+      - DATABASE_URL=postgresql://enterprise_test_user:enterprise_test_pass@postgres-test:5432/enterprise_test_db
+      - DATABASE_TEST_URL=postgresql://enterprise_test_user:enterprise_test_pass@postgres-test:5432/enterprise_test_db
+      - REDIS_URL=redis://redis-test:6379/0
+      - REDIS_TEST_URL=redis://redis-test:6379/15
+      - SECRET_KEY=test-secret-key-for-testing-only-32-chars-minimum
+      - JWT_SECRET_KEY=test-jwt-secret-key-for-testing-only-32-chars-minimum
+      - CORS_ORIGINS=["http://localhost:3000", "http://localhost:8080", "http://localhost:8001"]
+      - ALLOWED_HOSTS=["localhost", "127.0.0.1", "api-test"]
+      - CELERY_BROKER_URL=redis://redis-test:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis-test:6379/2
+      - AWS_ACCESS_KEY_ID=test-access-key
+      - AWS_SECRET_ACCESS_KEY=test-secret-key
       - AWS_REGION=us-east-1
       - S3_BUCKET_NAME=test-bucket
       - WEBHOOK_SECRET=test-webhook-secret
+      - MUSICBRAINZ_BASE_URL=http://mock-musicbrainz:8080
+      - LOG_LEVEL=DEBUG
+      - SENTRY_DSN=""  # Disable Sentry in tests
     depends_on:
-      postgres:
+      postgres-test:
         condition: service_healthy
-      redis:
+      redis-test:
         condition: service_healthy
     networks:
-      - enterprise-network
+      - test-network
+    volumes:
+      - ./app:/app/app
+      - ./tests:/app/tests
+      - ./alembic:/app/alembic
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
+      interval: 10s
+      timeout: 5s
       retries: 3
-      start_period: 40s
+      start_period: 20s
 
-volumes:
-  postgres_data:
-  redis_data:
+  # Mock External Services
+  mock-musicbrainz:
+    image: wiremock/wiremock:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./tests/fixtures/wiremock:/home/wiremock
+    networks:
+      - test-network
+    command: >
+      --global-response-templating
+      --verbose
+
+  # LocalStack for AWS Services Mock
+  localstack:
+    image: localstack/localstack:latest
+    ports:
+      - "4566:4566"  # LocalStack main port
+    environment:
+      - SERVICES=s3,sqs,lambda,iam
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - HOST_TMP_FOLDER=/tmp/localstack
+    volumes:
+      - "/tmp/localstack:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - test-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # Test Runner Service
+  test-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - ENVIRONMENT=testing
+      - DEBUG=true
+      - DATABASE_URL=postgresql://enterprise_test_user:enterprise_test_pass@postgres-test:5432/enterprise_test_db
+      - DATABASE_TEST_URL=postgresql://enterprise_test_user:enterprise_test_pass@postgres-test:5432/enterprise_test_db
+      - REDIS_URL=redis://redis-test:6379/0
+      - REDIS_TEST_URL=redis://redis-test:6379/15
+      - SECRET_KEY=test-secret-key-for-testing-only-32-chars-minimum
+      - JWT_SECRET_KEY=test-jwt-secret-key-for-testing-only-32-chars-minimum
+      - AWS_ACCESS_KEY_ID=test-access-key
+      - AWS_SECRET_ACCESS_KEY=test-secret-key
+      - AWS_REGION=us-east-1
+      - S3_BUCKET_NAME=test-bucket
+      - WEBHOOK_SECRET=test-webhook-secret
+      - MUSICBRAINZ_BASE_URL=http://mock-musicbrainz:8080
+      - LOCALSTACK_ENDPOINT=http://localstack:4566
+      - LOG_LEVEL=DEBUG
+      - PYTHONPATH=/app
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+      redis-test:
+        condition: service_healthy
+      localstack:
+        condition: service_healthy
+    networks:
+      - test-network
+    volumes:
+      - ./app:/app/app
+      - ./tests:/app/tests
+      - ./alembic:/app/alembic
+      - ./pytest.ini:/app/pytest.ini
+      - ./requirements.txt:/app/requirements.txt
+    working_dir: /app
+    command: tail -f /dev/null  # Keep container running for manual test execution
 
 networks:
-  enterprise-network:
+  test-network:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
