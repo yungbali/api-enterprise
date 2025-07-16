@@ -274,3 +274,65 @@ Copyright © 2025 Afromuse Digital. All rights reserved.
 ---
 
 **Built with ❤️ for African Music Distribution**
+
+## API Endpoints
+
+> All endpoints require authentication via Bearer JWT unless otherwise noted.
+
+### Authentication
+- `POST /api/v1/auth/login` — Obtain JWT access token (**implemented**)
+- `POST /api/v1/auth/logout` — Logout (**placeholder**)
+- `POST /api/v1/auth/refresh` — Refresh JWT token (**placeholder**)
+
+### Releases
+- `POST /api/v1/releases/` — Create a new release (**implemented**)
+- `GET /api/v1/releases/` — List all releases (**implemented**)
+- `GET /api/v1/releases/{release_id}` — Get a release by string release_id (**implemented**)
+- `PUT /api/v1/releases/{id}` — Update a release by numeric id (**implemented**)
+- `DELETE /api/v1/releases/{release_id}` — Delete a release by string release_id (**implemented**)
+
+### Partners
+- `POST /api/v1/partners/` — Create partner (**placeholder**)
+- `GET /api/v1/partners/{partner_id}` — Get partner by ID (**partially implemented**)
+- `PUT /api/v1/partners/{partner_id}` — Update partner (**placeholder**)
+- `DELETE /api/v1/partners/{partner_id}` — Delete partner (**placeholder**)
+
+### Delivery
+- `GET /api/v1/delivery/status` — Get delivery status (**placeholder**)
+- `POST /api/v1/delivery/retry` — Retry delivery (**placeholder**)
+
+### Analytics
+- `GET /api/v1/analytics/` — Get analytics data (**placeholder**)
+- `GET /api/v1/analytics/reports` — Get revenue reports (**placeholder**)
+
+### Webhooks
+- `POST /api/v1/webhooks/` — Create webhook (**placeholder**)
+- `GET /api/v1/webhooks/{webhook_id}` — Get webhook by ID (**placeholder**)
+- `DELETE /api/v1/webhooks/{webhook_id}` — Delete webhook by ID (**placeholder**)
+
+### Workflow
+- `POST /api/v1/workflow/rules` — Create workflow rule (**placeholder**)
+- `GET /api/v1/workflow/rules/{rule_id}` — Get workflow rule by ID (**placeholder**)
+- `GET /api/v1/workflow/executions` — Get workflow executions (**placeholder**)
+
+### MusicBrainz Integration
+- Rich set of endpoints for searching and retrieving artist, release, and recording data from MusicBrainz (**implemented**)
+
+---
+
+## Authentication Example
+
+Obtain a JWT token:
+```sh
+curl -X POST "http://<API_URL>/api/v1/auth/login" \
+  -H "Content-Type: application/json" \
+  -d '{"email": "testuser@example.com", "password": "testpassword"}'
+```
+
+Use the token in subsequent requests:
+```sh
+curl -X GET "http://<API_URL>/api/v1/releases/" \
+  -H "Authorization: Bearer <YOUR_TOKEN>"
+```
+
+---

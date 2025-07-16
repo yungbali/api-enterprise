@@ -85,15 +85,15 @@ async def get_release(
     )
 
 
-@router.put("/{release_id}", response_model=ReleaseOut)
+@router.put("/{id}", response_model=ReleaseOut)
 async def update_release(
-    release_id: str,
+    id: int,
     release_in: ReleaseUpdate,
     db: Session = Depends(get_db),
     current_user: schemas.User = Depends(get_current_active_user),
 ):
-    """Update existing release."""
-    release = crud.release.get_by_release_id(db=db, release_id=release_id)
+    """Update existing release by numeric id."""
+    release = db.query(Release).filter(Release.id == id).first()
     if not release:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
