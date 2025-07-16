@@ -6,19 +6,19 @@
   - Configure test environment variables and Docker Compose test services
   - _Requirements: 1.1, 2.1, 6.1_
 
-- [-] 2. Implement test data factories and utilities
+- [x] 2. Implement test data factories and utilities
   - Create factory classes for generating test users, releases, and partners
   - Implement test data utilities and helper functions
   - Build mock service framework for external API integrations
   - _Requirements: 2.1, 6.1, 8.1_
 
-- [ ] 3. Create unit tests for core models and schemas
+- [x] 3. Create unit tests for core models and schemas
   - Write unit tests for SQLAlchemy models (User, Release, Track, etc.)
   - Implement Pydantic schema validation tests
   - Test CRUD operations with isolated database transactions
   - _Requirements: 1.1, 2.1, 8.1, 8.2_
 
-- [ ] 4. Implement API endpoint integration tests
+- [x] 4. Implement API endpoint integration tests
   - Create comprehensive tests for authentication endpoints (/auth/login, /auth/logout)
   - Write tests for release management endpoints (CRUD operations)
   - Implement tests for partner, delivery, analytics, and webhook endpoints
